@@ -3,6 +3,8 @@
 
 ## Otros datos ##
 img_prueba
+*.txt
+*.jpg
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
