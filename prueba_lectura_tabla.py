@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import re
-import pytesseract
+# import pytesseract
 import csv
 import easyocr
 
@@ -11,6 +11,7 @@ src = r"./tabla_origen.png"
 raw = cv2.imread(src, 1)
 # Imagen en escala de grises
 gray = cv2.cvtColor(raw, cv2.COLOR_BGR2GRAY)
+cv2.imwrite("./img_prueba/tabla0.png", gray)
 
 # Binarización de imagen
 # binary = cv2.adaptiveThreshold(~gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
@@ -122,11 +123,12 @@ for i in range(len(xs) - 1):
     # Leer texto, este es el inglés predeterminado
     cv2.imwrite("./temp_img.png", cell)
     image = cv2.imread("./temp_img.png")
-    text1 = reader.readtext(image, detail=0)
-    if len(text1) > 0:
-        text1 = text1.pop()
-    else:
-        text1 = ""
+    text_list = reader.readtext(image, detail=0)
+
+    text1 = ""
+    
+    for text in text_list:
+        text1 = text1 + " " + text
 
     # Eliminar caracteres especiales
     text1 = re.findall(r'[^\*"/:?\\|″′‖〈\n]', text1, re.S)
@@ -169,11 +171,15 @@ for i in range(len(xs) - 1):
 ####################### GRABA EN CSV #######################
 
 # Escribo en CSV
-with open("./datos.csv", "w", newline='') as csv_file:
-    writer = csv.writer(csv_file, dialect='excel')
-    for index, item in enumerate(data):
-        print(index, ":", item)
-        with open("texto.txt", "a") as t:
-            t.write(str(item) + "\n")
+# with open("./datos.csv", "w", newline='') as csv_file:
+#     writer = csv.writer(csv_file, dialect='excel')
+#     for index, item in enumerate(data):
+#         print(index, ":", item)
         # if index != len(data) - 1:
             # writer.writerows([[item[0], item[1], item[2], item[3], item[4], item[5]]])
+
+# Escribo en txt
+with open("texto.txt", "w") as t:
+    for index, item in enumerate(data):
+        print(index, ":", item)
+        t.write(str(item) + "\n")
