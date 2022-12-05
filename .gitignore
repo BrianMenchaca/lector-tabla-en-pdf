@@ -2,7 +2,7 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=python
 
 ## Otros datos ##
-./img_prueba/
+img_prueba/
 
 ### Python ###
 # Byte-compiled / optimized / DLL files

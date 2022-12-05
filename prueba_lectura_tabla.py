@@ -4,8 +4,12 @@ import re
 # import pytesseract
 import csv
 import easyocr
+import os
 
 src = r"./tabla_origen.png"
+
+if (os.path.exists("./img_prueba") == False):
+        os.mkdir("./img_prueba")
 
 ################### PARTE 1 ###################
 raw = cv2.imread(src, 1)
