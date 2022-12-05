@@ -2,11 +2,9 @@ import cv2
 import easyocr
 
 reader = easyocr.Reader(["es"], gpu=False)
-image = cv2.imread("tabla.jpg")
+image = cv2.imread("./tabla_origen.png")
 
 print(reader.readtext(image, detail = 0))
-
-with open()
 
 # result = reader.readtext(image, paragraph=False)
 
