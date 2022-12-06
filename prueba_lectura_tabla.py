@@ -5,7 +5,7 @@ import csv
 import easyocr
 import os
 
-src = r"./tabla_origen.png"
+src = r"./tabla_origen1.png"
 
 if (os.path.exists("./img_prueba") == False):
     os.mkdir("./img_prueba")
