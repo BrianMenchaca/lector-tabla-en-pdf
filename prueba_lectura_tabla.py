@@ -4,6 +4,7 @@ import re
 import csv
 import easyocr
 import os
+import openpyxl
 
 src = r"./tabla_origen1.png"
 
@@ -111,7 +112,8 @@ for i in range(len(xs) - 1):
     else:
         dif = y_point_arr[j + 1] - y_point_arr[j]
 
-    cell = raw[y_point_arr[j] - dif:y_point_arr[j + 1] - dif, xs[i]:xs[i + 1]]
+    # cell = raw[y_point_arr[j] - dif:y_point_arr[j + 1] - dif, xs[i]:xs[i + 1]]
+    cell = gray[y_point_arr[j] - dif:y_point_arr[j + 1] - dif, xs[i]:xs[i + 1]]
     cv2.imwrite("./img_prueba/tabla_final_" + str(j) + "-" + str(i) + ".png",
                 cell)
 
@@ -138,13 +140,14 @@ for i in range(len(xs) - 1):
 
 ####################### GRABA EN CSV #######################
 
-# Escribo en CSV
-# with open("./datos.csv", "w", newline='') as csv_file:
-#     writer = csv.writer(csv_file, dialect='excel')
-#     for index, item in enumerate(data):
-#         print(index, ":", item)
-# if index != len(data) - 1:
-# writer.writerows([[item[0], item[1], item[2], item[3], item[4], item[5]]])
+# Escribo en Excel
+wb = openpyxl.Workbook()
+hoja_activa = wb.active
+
+for producto in data:
+    hoja_activa.append(producto)
+
+wb.save("Celdas.xlsx")
 
 # Escribo en txt
 with open("texto.txt", "w") as t:
