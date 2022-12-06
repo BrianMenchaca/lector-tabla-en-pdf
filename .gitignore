@@ -5,6 +5,7 @@
 img_prueba
 *.txt
 *.jpg
+*.xlsx
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
