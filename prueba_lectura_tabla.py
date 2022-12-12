@@ -72,7 +72,7 @@ def main():
             save_in_excel(table, dir_excel + "/" + nombre_excel)
             write_txt(table, dir_txt + "/" + nombre_txt)
 
-            # shutil.move(dir + '/' + pdf, dir_procesados + "/" + pdf)
+            shutil.move(dir + '/' + pdf, dir_procesados + "/" + pdf)
             input("\nPresione Enter para continuar...")
 
 
