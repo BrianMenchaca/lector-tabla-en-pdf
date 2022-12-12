@@ -108,8 +108,8 @@ for i in range(len(xs) - 1):
     else:
         dif = y_point_arr[j + 1] - y_point_arr[j]
     
-    cell = raw[y_point_arr[j] - dif:y_point_arr[j + 1] - dif, xs[i]:xs[i + 1]]
-    # cell = gray[y_point_arr[j] - dif:y_point_arr[j + 1] - dif, xs[i]:xs[i + 1]]
+    # cell = raw[y_point_arr[j] - dif:y_point_arr[j + 1] - dif, xs[i]:xs[i + 1]]
+    cell = gray[y_point_arr[j] - dif:y_point_arr[j + 1] - dif, xs[i]:xs[i + 1]]
     cv2.imwrite("./img_prueba/tabla_final_" + str(j) + "-" + str(i) + ".png",
                 cell)
 
@@ -117,7 +117,7 @@ for i in range(len(xs) - 1):
     cv2.imwrite("./img_prueba/temp_img.png", cell)
     image = cv2.imread("./img_prueba/temp_img.png")
     
-    # low_text_value= 0.05
+    # Con ajustes
     low_text_value= 0.08
     text_threshold_value = 0.3
     link_threshold_value= 0.3
@@ -129,7 +129,7 @@ for i in range(len(xs) - 1):
                                 link_threshold=link_threshold_value,
                                 mag_ratio=mag_ratio_value)
 
-    # text_list = reader.readtext(cell, detail=0)
+    # text_list = reader.readtext(cell, detail=0) # Sin ajustes
 
     # Convierte lista a string
     text1 = " ".join(text_list)
@@ -141,11 +141,11 @@ for i in range(len(xs) - 1):
     for x in range(len(characters)):
         text1 = text1.replace(characters[x],"")
 
-    # Imprime coordenadas de la celda por pantalla
-    print("tabla_final_" + str(j) + "-" + str(i) + ":", y_point_arr[j] - dif,y_point_arr[j + 1] - dif, xs[i],xs[i + 1])
+    # # Imprime coordenadas de la celda por pantalla
+    # print("tabla_final_" + str(j) + "-" + str(i) + ":", y_point_arr[j] - dif,y_point_arr[j + 1] - dif, xs[i],xs[i + 1])
 
-    # Imprime la informacion de la celda por pantalla
-    print("*"*20, text1, "\n")
+    # # Imprime la informacion de la celda por pantalla
+    # print("*"*20, text1, "\n")
 
     # Guarda el texto en la lista
     if final_row:
@@ -155,17 +155,17 @@ for i in range(len(xs) - 1):
 
 # ####################### GRABA EN CSV #######################
 
-# # Escribo en Excel
-# wb = openpyxl.Workbook()
-# hoja_activa = wb.active
+# Escribo en Excel
+wb = openpyxl.Workbook()
+hoja_activa = wb.active
 
-# for producto in data:
-#     hoja_activa.append(producto)
+for producto in data:
+    hoja_activa.append(producto)
 
-# wb.save("Celdas.xlsx")
+wb.save("Celdas.xlsx")
 
-# # Escribo en txt
-# with open("texto.txt", "w") as t:
-for index, item in enumerate(data):
-    print(index, ":", item)
-#         t.write(str(item) + "\n")
+# Escribo en txt
+with open("texto.txt", "w") as t:
+    for index, item in enumerate(data):
+        print(index, ":", item)
+        t.write(str(item) + "\n")
