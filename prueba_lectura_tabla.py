@@ -79,8 +79,8 @@ y_point_arr.append(sort_y_point[i])
 data = [[] for i in range(len(y_point_arr))]
 
 reader = easyocr.Reader(["es"], gpu=False)
-print(xs)
-print(y_point_arr)
+# print(xs)
+# print(y_point_arr)
 
 j = 0
 final_row = False
@@ -103,34 +103,49 @@ for i in range(len(xs) - 1):
             j = j - 1
             final_row = True
 
-    # Imprime coordenadas de la celda por pantalla
-    print("tabla_final_" + str(j) + "-" + str(i) + ":", y_point_arr[j],
-          y_point_arr[j + 1], xs[i], xs[i + 1])
-
     if final_row:
         dif = 0
     else:
         dif = y_point_arr[j + 1] - y_point_arr[j]
-
-    # cell = raw[y_point_arr[j] - dif:y_point_arr[j + 1] - dif, xs[i]:xs[i + 1]]
-    cell = gray[y_point_arr[j] - dif:y_point_arr[j + 1] - dif, xs[i]:xs[i + 1]]
+    
+    cell = raw[y_point_arr[j] - dif:y_point_arr[j + 1] - dif, xs[i]:xs[i + 1]]
+    # cell = gray[y_point_arr[j] - dif:y_point_arr[j + 1] - dif, xs[i]:xs[i + 1]]
     cv2.imwrite("./img_prueba/tabla_final_" + str(j) + "-" + str(i) + ".png",
                 cell)
 
     # Leer texto
     cv2.imwrite("./img_prueba/temp_img.png", cell)
     image = cv2.imread("./img_prueba/temp_img.png")
-    text_list = reader.readtext(image, detail=0)
+    
+    # low_text_value= 0.05
+    low_text_value= 0.08
+    text_threshold_value = 0.3
+    link_threshold_value= 0.3
+    mag_ratio_value = 1.1025
+
+    text_list = reader.readtext(cell, detail=0,
+                                low_text=low_text_value,
+                                text_threshold=text_threshold_value,
+                                link_threshold=link_threshold_value,
+                                mag_ratio=mag_ratio_value)
+
+    # text_list = reader.readtext(cell, detail=0)
 
     # Convierte lista a string
     text1 = " ".join(text_list)
 
     # Eliminar caracteres especiales
-    text1 = re.findall(r'[^\*"/:?\\|″′‖〈\n]', text1, re.S)
-    text1 = "".join(text1)
+
+    characters = '[^\*"/:?\\|″′‖〈\n]~{}'
+
+    for x in range(len(characters)):
+        text1 = text1.replace(characters[x],"")
+
+    # Imprime coordenadas de la celda por pantalla
+    print("tabla_final_" + str(j) + "-" + str(i) + ":", y_point_arr[j] - dif,y_point_arr[j + 1] - dif, xs[i],xs[i + 1])
 
     # Imprime la informacion de la celda por pantalla
-    print('Información de imagen de celda:' + text1 + "\n")
+    print("*"*20, text1, "\n")
 
     # Guarda el texto en la lista
     if final_row:
@@ -138,19 +153,19 @@ for i in range(len(xs) - 1):
     else:
         data[j].append(text1)
 
-####################### GRABA EN CSV #######################
+# ####################### GRABA EN CSV #######################
 
-# Escribo en Excel
-wb = openpyxl.Workbook()
-hoja_activa = wb.active
+# # Escribo en Excel
+# wb = openpyxl.Workbook()
+# hoja_activa = wb.active
 
-for producto in data:
-    hoja_activa.append(producto)
+# for producto in data:
+#     hoja_activa.append(producto)
 
-wb.save("Celdas.xlsx")
+# wb.save("Celdas.xlsx")
 
-# Escribo en txt
-with open("texto.txt", "w") as t:
-    for index, item in enumerate(data):
-        print(index, ":", item)
-        t.write(str(item) + "\n")
+# # Escribo en txt
+# with open("texto.txt", "w") as t:
+for index, item in enumerate(data):
+    print(index, ":", item)
+#         t.write(str(item) + "\n")
