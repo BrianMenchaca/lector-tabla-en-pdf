@@ -1,6 +1,5 @@
 import cv2
 import numpy as np
-# import re
 import easyocr
 import os
 import openpyxl
@@ -50,8 +49,8 @@ def main():
             print("\nSe leyo el archivo: " + pdf + "\n")
             print("*"*50)
             cpdf.convertir_pdf(pdf)
-            nombre_txt = pdf[:-4] + ".txt"  # Nombre de la salida en formato .txt
-            nombre_excel = pdf[:-4] + ".xlsx"  # Nombre de la salida en formato .xlsx (Excel)
+            nombre_txt = pdf[:-4] + ".txt" # Nombre de la salida en formato .txt
+            nombre_excel = pdf[:-4] + ".xlsx" # Nombre de la salida en formato .xlsx (Excel)
 
             dir_img_pdf = dir_img + "/" + pdf[:-4]
 
@@ -64,15 +63,12 @@ def main():
 
             for imagen in contenido_img:
                 table_temp = leer_tabla(dir_img_pdf + "/" + imagen, language, dir_test_folder + "/" + imagen[:-4])
-                if len(table) > 0:
-                    table = table + table_temp[1:]
-                else:
-                    table = table_temp
+                table = table + table_temp
 
             save_in_excel(table, dir_excel + "/" + nombre_excel)
             write_txt(table, dir_txt + "/" + nombre_txt)
 
-            # shutil.move(dir + '/' + pdf, dir_procesados + "/" + pdf)
+            shutil.move(dir + '/' + pdf, dir_procesados + "/" + pdf)
             input("\nPresione Enter para continuar...")
 
 
@@ -208,7 +204,7 @@ def leer_tabla(src, language, test_folder):
         text1 = " ".join(text_list)
 
         # Eliminar caracteres especiales
-        characters = '[^\*"/:?\\|″′‖〈\n]~{}'
+        characters = '[^\*":?\\|″′‖〈\n]~{}'
 
         for x in range(len(characters)):
             text1 = text1.replace(characters[x], "")
