@@ -5,7 +5,7 @@ import os
 import openpyxl
 import convertir_pdf_a_jpg as cpdf
 import shutil
-
+import time
 
 def main():
     dir = './pdf'
@@ -67,8 +67,9 @@ def main():
 
             save_in_excel(table, dir_excel + "/" + nombre_excel)
             write_txt(table, dir_txt + "/" + nombre_txt)
+            fecha_y_hora = time.strftime("%c")
 
-            shutil.move(dir + '/' + pdf, dir_procesados + "/" + pdf)
+            shutil.move(dir + '/' + pdf, dir_procesados + "/" + fecha_y_hora)
             input("\nPresione Enter para continuar...")
 
 
