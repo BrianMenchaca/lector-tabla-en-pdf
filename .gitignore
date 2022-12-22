@@ -2,10 +2,10 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=python
 
 ## Otros datos ##
-img_prueba
-img
-pdf
-procesados
+img_prueba/
+img/
+pdf/
+procesados/
 *.txt
 *.jpg
 *.xlsx
