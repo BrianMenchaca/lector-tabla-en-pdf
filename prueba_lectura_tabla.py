@@ -74,7 +74,7 @@ def main():
             save_in_excel(table, dir_excel + "/" + nombre_excel)
             write_txt(table, dir_txt + "/" + nombre_txt)
 
-            # shutil.move(dir + '/' + pdf, dir_procesados + "/" + pdf)
+            shutil.move(dir + '/' + pdf, dir_procesados + "/" + pdf)
             input("\nPresione Enter para continuar...")
 
 
@@ -246,8 +246,12 @@ def data_cleansing(data):
     data.pop(0)
 
     # Eliminar duplicados
-    set_data = set(data)
-    data = list(set_data)
+    unique_item = []
+    for item in data:
+        if item not in unique_item:
+            unique_item.append(item)
+    
+    data = unique_item;
 
     # Eliminar filas que no tengan 6 elementos o no tengan la clave primaria
     data = list(filter(lambda item: item[0] != '' and len(item) == 6, data))
@@ -295,7 +299,7 @@ def leer_datos_factura(test_folder):
 
     text_list = reader.readtext(image, detail=0)
 
-    data_list = ["" for i in range(0, 6)]
+    data_list = ["" for i in range(0, 7)]
 
     clave = "N.' de factura:"
     index = text_list.index(clave)
@@ -307,8 +311,7 @@ def leer_datos_factura(test_folder):
 
     clave = "Teléfono: "
     temp_list = list(filter(lambda x: x.startswith(clave), text_list))
-    data_list[2] = temp_list[0]
-    data_list[2] = data_list[2][len(clave):]
+    data_list[2] = temp_list[0][len(clave):]
 
     clave = "Dirección:"
     index = text_list.index(clave)
@@ -321,6 +324,10 @@ def leer_datos_factura(test_folder):
     clave = "Fecha de la factura:"
     index = text_list.index(clave)
     data_list[5] = text_list[index + 1]
+
+    clave = "Correo electrónico: "
+    temp_list = list(filter(lambda x: x.startswith(clave), text_list))
+    data_list[6] = temp_list[0][len(clave):]
 
     return data_list
 
@@ -339,24 +346,50 @@ def send_data(table, data):
         data[5] = corregir_formato_fecha(data[5])
 
         # Verifica los datos a ingresar a la tabla
+        print("\nDATOS DE FACTURA:")
         print("*" * 40)
         for item in data:
             print(item)
         print("*" * 40)
 
-        cursor.execute("""INSERT INTO brianme.Factura (
-            NumFactura,
-            FacturaPara,
-            Telefono,
-            Direccion,
-            Fax,
-            FechaEmision)
-            VALUES ( """ + "'" + data[0] + "'," + "'" + data[1] + "'," + "'" +
-                       data[2] + "'," + "'" + data[3] + "'," + "'" + data[4] +
-                       "'," + "'" + data[5] + "'"
-                       ");")
+        try:
+            cursor.execute(
+                """INSERT INTO brianme.Factura (
+                NumFactura, FacturaPara, Telefono, Direccion, Fax, FechaEmision, Correo)
+                VALUES ( """ + 
+                "'" + data[0] + "'," + 
+                "'" + data[1] + "'," + 
+                "'" + data[2] + "'," + 
+                "'" + data[3] + "'," + 
+                "'" + data[4] + "'," + 
+                "'" + data[5] + "'," + 
+                "'" + data[6] + "'" + ");")
+        except teradatasql.OperationalError:
+            print("La cabecera de la factura ya se encuentra en la base de datos.")
 
+        print("\nDATOS DEL PEDIDO:")
+        print("*" * 40)
+        for index, item in enumerate(table):
+            unid = item[3].split(" ")[0].replace(",",".")
+            desc = item[4].split(" ")[0].replace(",",".")
+            precio = item[5].split(" ")[0].replace(",",".")
             
+            print(index, ":", data[0], item[0], item[1], item[2], unid, desc, precio)
+
+            try:
+                cursor.execute(
+                    """INSERT INTO brianme.Pedido (NumFactura, NumArticulo, Descripcion, Cant,	PrecioUnidad, Descuento, Precio)
+                        VALUES ( """ 
+                        + "'" + data[0] + "'," 
+                        + "'" + item[0] + "'," 
+                        + "'" + item[1] + "'," 
+                        + item[2] + "," 
+                        + unid + "," 
+                        + desc + "," 
+                        + precio + ");")
+            except teradatasql.OperationalError:
+                print("Dato duplicado.")
+        print("*" * 40)
 
         # Consulta usando python
         # cursor.execute(""" select * from Factura; """)
@@ -364,7 +397,7 @@ def send_data(table, data):
         # print(result)
 
     except teradatasql.OperationalError:
-        print("Datos duplicados")
+        print("No se pudo establecer la conexion con la base de datos.-")
     finally:
         # Cierra la conexion
         cnx.close()
@@ -375,7 +408,6 @@ def write_txt(data, name):
     print()
     with open(name, "w") as t:
         for index, item in enumerate(data):
-            # print(index, ":", item)
             t.write(str(item) + "\n")
 
 
